@@ -49,14 +49,74 @@ class PostgresConnection:
         except Exception as e:
             print(f"Erro ao conectar ao banco de dados: {e}")
 
+    def close(self):
+        """
+        Fecha cursor e conexão.
+        """
+        if self.cursor:
+            self.cursor.close()
+        if self.connection:
+            self.connection.close()
+        print("Conexão encerrada.")
+
+
+    def create_table(self, cursor, schema: str, name: str, columns: dict):
+        """
+        Cria uma tabela no PostgreSQL dinamicamente.
+
+        Args:
+            cursor: cursor ativo da conexão com o banco.
+            name (str): nome da tabela a ser criada.
+            fields (dict): dicionário com nome da coluna como chave e tipo como valor.
+                            Ex: {"id": "SERIAL PRIMARY KEY", "nome": "VARCHAR(100)", "idade": "INTEGER"}
+        """
+
+        # Normalmente, você deve expressar o modelo da sua consulta como uma SQLinstância 
+        # com {} marcadores de posição no estilo - e usar format() para mesclar as partes 
+        # variáveis ​​neles, todas as quais devem ser Composablesubclasses
+        # exemplo: sql.SQL("select {columns} from {table}").format(columns=sql.identifier('col_name'))
+
+        # Transforma os valores do dicionario em objetos sql
+        formatted_columns = [
+            sql.SQL("{} {}").format(sql.Identifier(name), sql.SQL(col_type))
+            for name, col_type in columns.items()
+        ]
+
+        query = sql.SQL("CREATE TABLE IF NOT EXISTS {}.{} ({});").format(
+            sql.Identifier(schema),
+            sql.Identifier(name),
+            sql.SQL(', ').join(formatted_columns)
+        )
+
+        try:
+            cursor.execute(query)
+            print(f"Tabela {name} criada com sucesso")
+        
+        except Exception as e:
+            print(f"Erro ao criar a tabela: {e}")
+
 
 if __name__ == "__main__":
+
     load_dotenv()
-    pg = PostgresConnection(
+
+    conn = PostgresConnection(
         user=os.getenv("POSTGRES_USER"),
         host=os.getenv("POSTGRES_HOST"),
         password=os.getenv("POSTGRES_PASSWORD"),
         database=os.getenv("POSTGRES_DB")
     )
-    pg.connect_pg()
+
+    conn.connect_pg()
+
+    columns = {
+        "id": "SERIAL PRIMARY KEY",
+        "dados": "JSONB",
+    }
+
+    conn.create_table(conn.cursor, "warehouse", "json_test", columns)
+    conn.connection.commit()
+    conn.cursor.close()
+    conn.connection.close()
+
 
