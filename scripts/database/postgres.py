@@ -3,17 +3,25 @@ import os
 from psycopg2 import sql
 from dotenv import load_dotenv
 
+load_dotenv()
+
 class PostgresConnection:
     """
     Classe para conexão e interação com banco de dados PostgreSQL.
     """
     
-    def __init__(self, user: str, host: str, password: str, database: str , port: str = '5432'):
+    def __init__(
+            self, 
+            user: str = os.getenv("POSTGRES_USER"), 
+            host: str = os.getenv("POSTGRES_HOST"), 
+            password: str = os.getenv("POSTGRES_PASSWORD"), 
+            database: str = os.getenv("POSTGRES_DB"), 
+            port: str = os.getenv("POSTGRES_PORT")
+            ):
         """ 
         Pega as variaveis necessarias para conexao com o banco do arquivo .env
         """
 
-        
         self.user = user
         self.host = host
         self.password = password
@@ -124,12 +132,7 @@ if __name__ == "__main__":
 
     load_dotenv()
 
-    conn = PostgresConnection(
-        user=os.getenv("POSTGRES_USER"),
-        host=os.getenv("POSTGRES_HOST"),
-        password=os.getenv("POSTGRES_PASSWORD"),
-        database=os.getenv("POSTGRES_DB")
-    )
+    conn = PostgresConnection()
 
     conn.connect_pg()
 
