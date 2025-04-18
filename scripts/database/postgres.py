@@ -59,6 +59,28 @@ class PostgresConnection:
             self.connection.close()
         print("Conexão encerrada.")
 
+    def create_schema(self, cursor, schema_name: str):
+        """
+        Cria um schema no banco de dados, se ainda não existir.
+
+        Args:
+            schema_name (str): nome do schema que será criado.
+        """
+
+        query = sql.SQL("CREATE SCHEMA IF NOT EXISTS {}").format(
+            sql.Identifier(schema_name)
+        )
+
+        try:
+            cursor.execute(query)
+            self.connection.commit()
+            print(f"Schema '{schema_name}' criado (ou já existia).")
+
+        except Exception as e:
+            print(f"Erro ao criar o schema: {e}")
+            self.connection.rollback()
+
+
 
     def create_table(self, cursor, schema: str, name: str, columns: dict):
         """
@@ -91,9 +113,11 @@ class PostgresConnection:
         try:
             cursor.execute(query)
             print(f"Tabela {name} criada com sucesso")
-        
+            self.connection.commit()
+            
         except Exception as e:
             print(f"Erro ao criar a tabela: {e}")
+            self.connection.rollback()
 
 
 if __name__ == "__main__":
