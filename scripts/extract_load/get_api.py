@@ -33,6 +33,16 @@ def extract_api(date: str):
             print("Falha ao estalecer conexão com o banco")
             return
 
+        DB_SCHEMA = "warehouse"
+        TABLE_NAME = "estatisticas_pix"
+        COLUMNS = {"id": "SERIAL PRIMARY KEY",
+                   "dados": "JSONB"
+                   }
+
+        conn.create_schema(conn.cursor, DB_SCHEMA)
+        conn.create_table(conn.cursor, DB_SCHEMA, TABLE_NAME, COLUMNS)
+        conn.connection.commit()
+
         # insere os dados no campo (dados) através do placeholder (%s)
         # (%s) placeholder para o valor que será passadoo em seguida
         # json(registros) converte o dict python para o formato json compativel com o postgres
@@ -45,9 +55,12 @@ def extract_api(date: str):
         conn.connection.commit()
         print(f"{len(registros)} registros inseridos com sucesso no banco.")
 
+
+
     else:
         print(f"Erro ao buscar os dados: {r.status_code}")
 
+    cursor.close()
 
 if __name__ == "__main__":
     DATE_API = '202412'

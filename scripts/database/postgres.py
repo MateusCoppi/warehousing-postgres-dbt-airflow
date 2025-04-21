@@ -126,6 +126,7 @@ class PostgresConnection:
         except Exception as e:
             print(f"Erro ao criar a tabela: {e}")
             self.connection.rollback()
+            raise
 
 
 if __name__ == "__main__":
