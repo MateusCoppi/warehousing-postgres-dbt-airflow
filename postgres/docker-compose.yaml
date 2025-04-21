@@ -9,9 +9,17 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - 5432:5432
+    networks:
+      - mateus_study
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8081:8080
+    networks:
+    - mateus_study
+
+networks:
+  mateus_study:
+    driver: bridge

@@ -1,12 +1,8 @@
-import os
 import sys
 import requests
-from dotenv import load_dotenv
 from psycopg2.extras import Json
 
-load_dotenv()
-root_dir = os.getenv('ROOT_DIR')
-sys.path.append(root_dir)
+sys.path.append("/opt/airflow")
 
 from scripts.database.postgres import PostgresConnection
 
@@ -29,9 +25,12 @@ def extract_api(date: str):
         conn = PostgresConnection()
         conn.connect_pg()
 
-        if conn.connection is None:
-            print("Falha ao estalecer conexão com o banco")
-            return
+        try:
+            if conn.connection is None:
+                raise ConnectionError("Falha ao estalecer conexão com o banco")
+        except ConnectionError as e:
+            print(e)
+
 
         DB_SCHEMA = "warehouse"
         TABLE_NAME = "estatisticas_pix"
@@ -49,7 +48,7 @@ def extract_api(date: str):
         with conn.connection.cursor() as cursor:
             for data in registros:
                 cursor.execute(
-                    "INSERT INTO warehouse.estatisticas_pix (dados) VALUES (%s)",
+                    f"INSERT INTO {DB_SCHEMA}.{TABLE_NAME} (dados) VALUES (%s)",
                     [Json(data)]
                 )
         conn.connection.commit()
@@ -60,7 +59,7 @@ def extract_api(date: str):
     else:
         print(f"Erro ao buscar os dados: {r.status_code}")
 
-    cursor.close()
+    conn.close()
 
 if __name__ == "__main__":
     DATE_API = '202412'

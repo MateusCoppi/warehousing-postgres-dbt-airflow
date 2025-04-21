@@ -87,6 +87,7 @@ class PostgresConnection:
         except Exception as e:
             print(f"Erro ao criar o schema: {e}")
             self.connection.rollback()
+            raise
 
 
 
