@@ -1,8 +1,6 @@
 import sys
-import os
 from datetime import datetime, date
 from airflow import DAG
-from airflow.operators.python import PythonOperator
 from airflow.operators.empty import EmptyOperator
 from airflow.decorators import task
 
@@ -17,9 +15,9 @@ default_args = {
 
 with DAG(
     dag_id="extract_pix_data_from_api",
-    start_date=datetime(2024, 4, 21),
-    catchup=False,
-    schedule_interval=None
+    start_date=datetime(2025, 6, 1),
+    catchup=True,
+    schedule_interval="@daily"
 ):
     
     start = EmptyOperator(task_id="start_extract")

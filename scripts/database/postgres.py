@@ -32,7 +32,7 @@ class PostgresConnection:
 
     def connect_pg(self):
         """"
-        Estabele conexão com o banco de dados.
+        Estabelece conexão com o banco de dados.
         
         Returns:
             String com versao do banco se conectado com sucesso ou erro caso falhe
@@ -53,6 +53,8 @@ class PostgresConnection:
             self.cursor.execute("SELECT version();")
             version = self.cursor.fetchone()
             print(f"Versão do PostgreSQL: {version}")
+
+            return self.connection
 
         except Exception as e:
             print(f"Erro ao conectar ao banco de dados: {e}")
