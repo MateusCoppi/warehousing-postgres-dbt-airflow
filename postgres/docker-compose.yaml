@@ -23,3 +23,4 @@ services:
 networks:
   mateus_study:
     driver: bridge
+    external: True
