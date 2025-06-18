@@ -2,8 +2,11 @@ import psycopg2
 import os
 from psycopg2 import sql
 from dotenv import load_dotenv
+from pathlib import Path
+from sqlalchemy import create_engine
 
-load_dotenv()
+env_path = Path(__file__).resolve().parents[2] / "postgres" / ".env"
+load_dotenv(dotenv_path=env_path)
 
 class PostgresConnection:
     """
@@ -29,6 +32,15 @@ class PostgresConnection:
         self.port = port
         self.connection = None
         self.cursor = None
+
+    def create_engine(self):
+        """
+        Cria a engine para conexao com o banco
+        """
+
+        engine = create_engine(f"postgresql+psycopg2://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}")
+
+        return engine            
 
     def connect_pg(self):
         """"
