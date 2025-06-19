@@ -1,8 +1,8 @@
 import sys
 import requests
-from psycopg2.extras import Json
+import pandas as pd
 
-sys.path.append("/opt/airflow")
+sys.path.append("/home/mateus/workflow/pipeline_project")
 
 from scripts.database.postgres import PostgresConnection
 
@@ -22,8 +22,12 @@ def extract_api(date: str):
 
         registros = data.get("value", [])
 
+        df = pd.DataFrame(registros)
+
         conn = PostgresConnection()
         conn.connect_pg()
+        cursor = conn.pg_cursor
+        engine = conn.create_engine()
 
         try:
             if conn.connection is None:
@@ -34,27 +38,27 @@ def extract_api(date: str):
 
         DB_SCHEMA = "warehouse"
         TABLE_NAME = "estatisticas_pix"
-        COLUMNS = {"id": "SERIAL PRIMARY KEY",
-                   "dados": "JSONB"
+        COLUMNS = {
+                    "id": "SERIAL PRIMARY KEY",
+                    "AnoMes": "integer",
+                    "PAG_PFPJ": "text",
+                    "REC_PFPJ": "text",
+                    "PAG_REGIAO": "text",
+                    "REC_REGIAO": "text",
+                    "PAG_IDADE": "text",
+                    "REC_IDADE": "text",
+                    "NATUREZA": "text",
+                    "VALOR": "double precision",
+                    "QUANTIDADE": "integer"
                    }
 
-        conn.create_schema(conn.cursor, DB_SCHEMA)
-        conn.create_table(conn.cursor, DB_SCHEMA, TABLE_NAME, COLUMNS)
+        conn.create_schema(cursor, DB_SCHEMA)
+        conn.create_table(cursor, DB_SCHEMA, TABLE_NAME, COLUMNS)
         conn.connection.commit()
 
-        # insere os dados no campo (dados) através do placeholder (%s)
-        # (%s) placeholder para o valor que será passadoo em seguida
-        # json(registros) converte o dict python para o formato json compativel com o postgres
-        with conn.connection.cursor() as cursor:
-            for data in registros:
-                cursor.execute(
-                    f"INSERT INTO {DB_SCHEMA}.{TABLE_NAME} (dados) VALUES (%s)",
-                    [Json(data)]
-                )
-        conn.connection.commit()
-        print(f"{len(registros)} registros inseridos com sucesso no banco.")
+        df.to_sql(name=TABLE_NAME,  con=engine, schema=DB_SCHEMA, if_exists="append", index=False)
 
-
+        print(f"{df.shape} registros inseridos com sucesso no banco.")
 
     else:
         print(f"Erro ao buscar os dados: {r.status_code}")

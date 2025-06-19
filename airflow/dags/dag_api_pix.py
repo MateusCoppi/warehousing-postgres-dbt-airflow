@@ -6,7 +6,7 @@ from airflow.decorators import task
 
 sys.path.append("/opt/airflow")
 
-from scripts.extract_load.get_api import extract_api
+from scripts.etl.get_api import extract_api
 
 default_args = {
     "owner": "mateus coppi",

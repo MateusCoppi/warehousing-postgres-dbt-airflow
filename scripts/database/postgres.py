@@ -31,7 +31,7 @@ class PostgresConnection:
         self.database = database
         self.port = port
         self.connection = None
-        self.cursor = None
+        self.pg_cursor = None
 
     def create_engine(self):
         """
@@ -59,11 +59,11 @@ class PostgresConnection:
                 port=self.port
             )
 
-            self.cursor = self.connection.cursor()
+            self.pg_cursor = self.connection.cursor()
 
             print("Conexão com o banco estabelecida com sucesso")
-            self.cursor.execute("SELECT version();")
-            version = self.cursor.fetchone()
+            self.pg_cursor.execute("SELECT version();")
+            version = self.pg_cursor.fetchone()
             print(f"Versão do PostgreSQL: {version}")
 
             return self.connection
@@ -75,8 +75,8 @@ class PostgresConnection:
         """
         Fecha cursor e conexão.
         """
-        if self.cursor:
-            self.cursor.close()
+        if self.pg_cursor:
+            self.pg_cursor.close()
         if self.connection:
             self.connection.close()
         print("Conexão encerrada.")
@@ -157,9 +157,10 @@ if __name__ == "__main__":
         "dados": "JSONB",
     }
 
-    conn.create_table(conn.cursor, "warehouse", "json_test", columns)
+    conn.create_table(conn.pg_cursor, "warehouse", "json_test", columns)
     conn.connection.commit()
-    conn.cursor.close()
+    conn.pg_cursor.close()
     conn.connection.close()
+
 
 

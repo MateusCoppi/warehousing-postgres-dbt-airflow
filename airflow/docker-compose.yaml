@@ -61,7 +61,7 @@ x-airflow-common:
     postgres:
       condition: service_healthy
   env_file:
-    - .env
+    - /home/mateus/workflow/pipeline_project/.env
   networks:
    - mateus_study
    
