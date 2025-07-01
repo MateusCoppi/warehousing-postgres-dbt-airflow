@@ -1,0 +1,117 @@
+version: 1
+
+models:
+  - name: agg_region
+    description: "Values and amount aggregated by region"
+    columns:
+      - name: "Region"
+        description: "Region name"
+        data_tests:
+          - unique
+          - not_null
+      - name: "Value"
+        description: "Value by region"
+        data_tests:
+          - not_null
+      - name: "Quantity"
+        description: "Quantity by region"
+        data_tests:
+          - not_null
+
+  - name: estatistic_pix_fact
+    description: "Estatistic pix fact table"
+    columns:
+      - name: "id"
+        description: "Data identifier"
+        data_tests:
+          - unique
+          - not_null
+      - name: "Year Month"
+        description: "Year and month of the data"
+        data_tests:
+          - not_null
+      - name: "Payment PFPJ"
+        description: "Payer type"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['PF', 'PJ']
+      - name: "Receiver PFPJ"
+        description: "Receiver type"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['PF', 'PJ']
+      - name: "Payment Region"
+        description: "Region where the payment occurred"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1, 2, 3, 4, 5]
+      - name: "Receiver Region"
+        description: "Region where the receiver occurred"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1, 2, 3, 4, 5]
+      - name: "Age Payment"
+        description: "Age of the person or company that made the payment"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [
+                "entre 30 e 39 anos",
+                "entre 50 e 59 anos",
+                "entre 40 e 49 anos",
+                "entre 20 e 29 anos",
+                "até 19 anos",
+                "mais de 60 anos",
+                "Nao se aplica",
+                "Nao informado"
+              ]
+      - name: "Age Receiver"
+        description: "Age of the person or company that receiving the payment"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [
+                "entre 30 e 39 anos",
+                "entre 50 e 59 anos",
+                "entre 40 e 49 anos",
+                "entre 20 e 29 anos",
+                "até 19 anos",
+                "mais de 60 anos",
+                "Nao se aplica",
+                "Nao informado"
+              ]
+      - name: "Value"
+        description: "Total value of transactions in the year and month"
+        data_tests:
+          - not_null
+      - name: "Quantity"
+        description: "Number of transactions in the year and month"
+        data_tests:
+          - not_null
+
+  - name: region_modeling
+    description: "Regions id"
+    columns:
+      - name: "id_region"
+        description: "Region id"
+        data_tests:
+          - unique
+          - not_null
+          - accepted_values:
+              values: [0, 1, 2, 3, 4, 5]
+      - name: "name_region"
+        description: "Region name"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [
+                "NORTE",
+                "NORDESTE",
+                "CENTRO-OESTE",
+                "SUDESTE",
+                "SUL"
+              ]

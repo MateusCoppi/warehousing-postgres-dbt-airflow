@@ -3,6 +3,7 @@ from datetime import datetime, date
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 from airflow.decorators import task
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 
 sys.path.append("/opt/airflow")
 
@@ -29,4 +30,9 @@ with DAG(
 
     end = EmptyOperator(task_id="end_extract")
 
-    start >> extract_task() >> end
+    trigger_dbt_transformations = TriggerDagRunOperator(
+        task_id='dbt_transformations_trigger',
+        trigger_dag_id='dbt_data_transform'
+    )
+
+    start >> extract_task() >> end >> trigger_dbt_transformations
